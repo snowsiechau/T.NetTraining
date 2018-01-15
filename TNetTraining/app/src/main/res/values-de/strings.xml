@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TNetTraining-De</string>
+    <string name="trip">ausflug</string>
+    <string name="map">kerte</string>
+    <string name="change_language">sich bewerben</string>
+</resources>

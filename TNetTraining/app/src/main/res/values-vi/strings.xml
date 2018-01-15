@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TNetTraining</string>
+    <string name="trip">chuyến đi</string>
+    <string name="map">bản đồ</string>
+    <string name="change_language">áp dụng</string>
+</resources>
