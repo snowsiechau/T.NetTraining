@@ -1,5 +1,6 @@
 package com.example.glory_hunter.tnettraining;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -22,14 +23,13 @@ public class MainActivity extends AppCompatActivity {
     private static final String MY_PREFS_NAME = "language";
     private Button bt1, btMap, btLanguage;
     private Spinner spLanguage;
-    private Locale locale;
-    private static String language;
-
+    private Locale myLocale;
+    private boolean refresh = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        loadLocale();
         setupUI();
 
         List<String> listSpinner = new ArrayList<>();
@@ -49,23 +49,20 @@ public class MainActivity extends AppCompatActivity {
         spLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("spinner", "onItemSelected: " + i);
-
 
                 switch (i){
                     case 1:
-                        setLocale("en");
-                        language = "en";
+                        changeLang("en");
+                        saveLocale("en");
                         break;
                     case 2:
-                        setLocale("de");
-                        language = "de";
+                        changeLang("de");
+                        saveLocale("de");
                         break;
                     case 3:
-                        setLocale("vi");
-                        language = "vi";
+                        changeLang("vi");
+                        saveLocale("vi");
                         break;
-
                         default: break;
                 }
 
@@ -80,11 +77,16 @@ public class MainActivity extends AppCompatActivity {
         btLanguage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("onclick", "onClick: " + language);
-                SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putString("language", language);
-                editor.apply();
+                Intent refresh = new Intent(MainActivity.this, MainActivity.class);
+                startActivity(refresh);
+            }
+        });
+
+        btMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -105,15 +107,40 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void setLocale(String lang) {
+    public void loadLocale() {
+        String langPref = "Language";
+        SharedPreferences prefs = getSharedPreferences("CommonPrefs",
+                Activity.MODE_PRIVATE);
+        String language = prefs.getString(langPref, "");
+        Locale current = getResources().getConfiguration().locale;
+        if (!language.equals(current.toString())){
+            refresh = true;
+        }
+        changeLang(language);
 
-        locale = new Locale(lang);
-        Resources res = getResources();
-        DisplayMetrics dm = res.getDisplayMetrics();
-        Configuration conf = res.getConfiguration();
-        conf.locale = locale;
-        res.updateConfiguration(conf, dm);
-        Intent refresh = new Intent(this, MainActivity.class);
-        startActivity(refresh);
+        if (refresh){
+            Intent refresh = new Intent(MainActivity.this, MainActivity.class);
+            startActivity(refresh);
+        }
+
+    }
+
+    public void changeLang(String lang) {
+        if (lang.equalsIgnoreCase(""))
+            return;
+        myLocale = new Locale(lang);
+        Locale.setDefault(myLocale);
+        android.content.res.Configuration config = new android.content.res.Configuration();
+        config.locale = myLocale;
+        getBaseContext().getResources().updateConfiguration(config,getBaseContext().getResources().getDisplayMetrics());
+    }
+
+    public void saveLocale(String lang) {
+        String langPref = "Language";
+        SharedPreferences prefs = getSharedPreferences("CommonPrefs",
+                Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(langPref, lang);
+        editor.apply();
     }
 }

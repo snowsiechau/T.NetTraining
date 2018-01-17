@@ -3,4 +3,5 @@
     <string name="trip">chuyến đi</string>
     <string name="map">bản đồ</string>
     <string name="change_language">chuyển ngôn ngữ</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
